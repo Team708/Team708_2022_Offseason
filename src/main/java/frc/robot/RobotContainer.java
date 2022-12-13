@@ -27,11 +27,14 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FMSConstants;
 
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.vision.PhotonDeviceManager;
 import frc.robot.subsystems.vision.VisionProcessor;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+
+import org.photonvision.PhotonCamera;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -45,8 +48,15 @@ import java.util.List;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  public static final VisionProcessor m_visionProcessor = new VisionProcessor();
+  // public static final VisionProcessor m_visionProcessor = new VisionProcessor();
   public static final SendableChooser<Command> m_chooser = new SendableChooser<>();
+
+  //Vision
+  public static final PhotonDeviceManager m_photonManager = PhotonDeviceManager.getInstance();
+  private static PhotonCamera c1 = new PhotonCamera("camera 1");
+  private static PhotonCamera c2 = new PhotonCamera("camera 2");
+  private static PhotonCamera c3 = new PhotonCamera("camera 3");
+  private static PhotonCamera c4 = new PhotonCamera("camera 4");
 
   // Alliance Information
   public static DriverStation.Alliance alliance;
@@ -58,7 +68,10 @@ public class RobotContainer {
    */
   public RobotContainer() {
 
-    CameraServer.startAutomaticCapture();
+    //Adding cameras to device manager
+    m_photonManager.addDevices(new PhotonCamera[]{c1, c2, c3, c4});
+
+    // CameraServer.startAutomaticCapture();
 
     OI.configureButtonBindings(m_robotDrive);
 
