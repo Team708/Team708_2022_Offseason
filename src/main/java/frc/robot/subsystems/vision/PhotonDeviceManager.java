@@ -22,10 +22,19 @@ public class PhotonDeviceManager {
         photonDevices = new LinkedList<PhotonCamera>();
     }
     
+    /**
+     * Method to add devices to the manager
+     * @param c An array of n length of cameras to be added to the manager
+     */
     public void addDevices(PhotonCamera ... c){
-        Arrays.asList(c).stream().filter(cam -> photonDevices.contains(cam)).forEach(cam -> photonDevices.add(cam));
+        Arrays.asList(c).stream().filter(cam -> !photonDevices.contains(cam)).forEach(cam -> photonDevices.add(cam));
     }
 
+    /**
+     * Method to get a specific camera from the manager
+     * @param index The index of the PhotonCamera in the manager
+     * @return The PhotonCamera that the index points to
+     */
     public PhotonCamera getSpecificCamera(int index){
         return photonDevices.stream().filter(t -> index == (t.getPipelineIndex())).findAny().orElse(null);
     }
