@@ -1,6 +1,7 @@
 package frc.robot;
 
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.drive.ResetGyroCommand;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -79,8 +80,8 @@ public class OI {
 		// new JoystickButton(driverGamepad, Button.kY.value)
 		// 		.whenPressed(new /*Command*/);
 
-		// new JoystickButton(driverGamepad, Button.kA.value)
-		// 		.whenPressed(new /*Command*/);		
+		new JoystickButton(driverGamepad, Button.kA.value)
+				.whenPressed(new ResetGyroCommand(m_robotDrive));		
 				
 		// new JoystickButton(driverGamepad, Button.kBack.value)
 		// 		.whenPressed(new /*Command*/)
