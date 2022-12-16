@@ -45,10 +45,10 @@ public final class Constants {
     public static final boolean kRearRightDriveEncoderReversed  = (RobotConstants.kRobot) ? false : false;
 
     // offset in degrees			
-    public static final double kFrontLeftOffset   = (RobotConstants.kRobot) ? 86 : -34.2;    // degree
-    public static final double kFrontRightOffset  = (RobotConstants.kRobot) ? 125.5 : -93.2; // degree
-    public static final double kRearLeftOffset    = (RobotConstants.kRobot) ? 30.5 : -68.2;  // degree
-    public static final double kRearRightOffset   = (RobotConstants.kRobot) ? 24.1 : -136.4; // degree
+    public static final double kFrontLeftOffset   = (RobotConstants.kRobot) ? 148 : -34.2;    // degree
+    public static final double kFrontRightOffset  = (RobotConstants.kRobot) ? -92 : -93.2; // degree
+    public static final double kRearLeftOffset    = (RobotConstants.kRobot) ? 109 : -68.2;  // degree
+    public static final double kRearRightOffset   = (RobotConstants.kRobot) ? -138 : -136.4; // degree
 
     // Distance between centers of right and left wheels on robot    
     public static final double kTrackWidth = (RobotConstants.kRobot) ? 0.6731 : 0.444; // m

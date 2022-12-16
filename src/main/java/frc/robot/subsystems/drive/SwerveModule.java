@@ -156,5 +156,6 @@ public class SwerveModule {
     // SmartDashboard.putNumber(modID + " turn vel",
     // m_turningMotor.getSelectedSensorVelocity(0) *
     // ModuleConstants.kTurningEncoderDistancePerPulse *180/Math.PI);
+    // SmartDashboard.putNumber(modID + " Encoder Value", m_turningMotor.getSelectedSensorPosition(0));
   }
 }
