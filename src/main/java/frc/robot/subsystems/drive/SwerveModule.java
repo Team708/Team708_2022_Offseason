@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -13,6 +14,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -21,10 +23,13 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class SwerveModule {
   private final CANSparkMax m_driveMotor;
-  private final TalonSRX m_turningMotor;
+  private final TalonSRX m_turningMotorSRX;
+  private final CANSparkMax m_turningMotorNEO;
   private final String modID;
   private final double offset;
+
   private final RelativeEncoder m_driveEncoder;
+  private final RelativeEncoder m_turnEncoder;
 
   private final PIDController m_drivePIDController = new PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
 
@@ -41,15 +46,25 @@ public class SwerveModule {
    * @param turningMotorChannel ID for the turning motor.
    */
   public SwerveModule(String modID, int driveMotorChannel, int turningMotorChannel, boolean driveEncoderReversed,
-      double offset) {
+      double offset, int CANCoderChannel) {
     this.modID = modID;
     this.offset = offset;
     m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
-    m_turningMotor = new TalonSRX(turningMotorChannel);
+    
+    //TODO DETERMINE IF THERE IS A BETTER APPROACH THAN THIS
+    m_turningMotorSRX = new TalonSRX(turningMotorChannel);
+    m_turningMotorNEO = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
 
     m_driveEncoder = m_driveMotor.getEncoder();
+    m_turnEncoder = m_turningMotorNEO.getEncoder();
 
-    configureMotors();
+    if(Constants.RobotConstants.kRobot){
+      configureTestMotors();
+    }else{
+      CANCoder canCoder = new CANCoder(CANCoderChannel);
+      configureRobotMotors(canCoder);
+    }
+    configureTestMotors();
     resetEncoders();
 
     // Set whether drive encoder should be reversed or not
@@ -60,25 +75,25 @@ public class SwerveModule {
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
-  private void configureMotors() {
-    m_turningMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10);
-    m_turningMotor.setSensorPhase(true);
-    m_turningMotor.setInverted(true);
-    m_turningMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 10, 10);
-    m_turningMotor.enableVoltageCompensation(true);
-    m_turningMotor.setNeutralMode(NeutralMode.Brake);
-    m_turningMotor.configVoltageCompSaturation(7.0, 10);
-    m_turningMotor.configNominalOutputForward(0.0, 10);
-    m_turningMotor.configNominalOutputReverse(0.0, 10);
-    m_turningMotor.configAllowableClosedloopError(0, 0, 10);
-    m_turningMotor.configMotionAcceleration((int) (1992 * 1.0), 10); // 10.0 jnp
-    m_turningMotor.configMotionCruiseVelocity((int) (1992 * 1.0), 10);// 0.8 jnp
-    m_turningMotor.selectProfileSlot(0, 0);
-    m_turningMotor.config_kP(0, 4.0, 10);// 1
-    m_turningMotor.config_kI(0, 0.0, 10);
-    m_turningMotor.config_kD(0, 80.0, 10);// 10
-    m_turningMotor.config_kF(0, 0.75 * (1023.0 / 1992), 10);
-    m_turningMotor.set(ControlMode.MotionMagic, m_turningMotor.getSelectedSensorPosition(0));
+  private void configureTestMotors() {
+    m_turningMotorSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10);
+    m_turningMotorSRX.setSensorPhase(true);
+    m_turningMotorSRX.setInverted(true);
+    m_turningMotorSRX.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 10, 10);
+    m_turningMotorSRX.enableVoltageCompensation(true);
+    m_turningMotorSRX.setNeutralMode(NeutralMode.Brake);
+    m_turningMotorSRX.configVoltageCompSaturation(7.0, 10);
+    m_turningMotorSRX.configNominalOutputForward(0.0, 10);
+    m_turningMotorSRX.configNominalOutputReverse(0.0, 10);
+    m_turningMotorSRX.configAllowableClosedloopError(0, 0, 10);
+    m_turningMotorSRX.configMotionAcceleration((int) (1992 * 1.0), 10); // 10.0 jnp
+    m_turningMotorSRX.configMotionCruiseVelocity((int) (1992 * 1.0), 10);// 0.8 jnp
+    m_turningMotorSRX.selectProfileSlot(0, 0);
+    m_turningMotorSRX.config_kP(0, 4.0, 10);// 1
+    m_turningMotorSRX.config_kI(0, 0.0, 10);
+    m_turningMotorSRX.config_kD(0, 80.0, 10);// 10
+    m_turningMotorSRX.config_kF(0, 0.75 * (1023.0 / 1992), 10);
+    m_turningMotorSRX.set(ControlMode.MotionMagic, m_turningMotorSRX.getSelectedSensorPosition(0));
 
     // drivePIDController.setFeedbackDevice(driveEncoder);
     m_driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderDistancePerPulse);
@@ -90,19 +105,38 @@ public class SwerveModule {
     // drivePIDController.setD(24);
   }
 
+  private void configureRobotMotors(CANCoder offsetEncoder){
+    // drivePIDController.setFeedbackDevice(driveEncoder);
+    m_driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderDistancePerPulse);
+    m_driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderVelocityPerPulse * ModuleConstants.kVelocityModifier);
+    m_driveEncoder.setPosition(0.0);
+    m_driveMotor.setIdleMode(IdleMode.kBrake);
+    // drivePIDController.setP(0.2);
+    // drivePIDController.setI(0);
+    // drivePIDController.setD(24);
+
+    m_turnEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderDistancePerPulse);
+    m_turnEncoder.setPosition(offsetEncoder.getAbsolutePosition()); //TODO ENSURE THAT WE ARE IN THE CORRECT POSITION
+    m_turningMotorNEO.setIdleMode(IdleMode.kBrake);
+    //TODO ESTABLISH PID
+  }
+
   /**
    * Returns the current angle the module.
-   *
+   * TODO CHECK
    * @return The current angle of the module in radians.
    */
   public double getAngle() {
-    return (m_turningMotor.getSelectedSensorPosition(0) * ModuleConstants.kTurningEncoderDistancePerPulse)
-        + (offset * Math.PI / 180);
+    return (Constants.RobotConstants.kRobot) ? 
+    (m_turningMotorSRX.getSelectedSensorPosition(0) * ModuleConstants.kTurningEncoderDistancePerPulse)
+    + (offset * Math.PI / 180) :
+    (m_turningMotorNEO.getEncoder().getPosition() * ModuleConstants.kTurningEncoderDistancePerPulse)
+    + (offset * Math.PI / 180);
   }
 
   /**
    * Returns the current state of the module.
-   *
+   * 
    * @return The current state of the module.
    */
   public SwerveModuleState getState() {
@@ -117,18 +151,22 @@ public class SwerveModule {
   public void setDesiredState(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(getAngle()));
-
     // Calculate the drive output from the drive PID controller.
     final double driveOutput = m_drivePIDController.calculate(m_driveEncoder.getVelocity(), state.speedMetersPerSecond);
 
-    // Calculate the turning motor output from the turning PID controller.
-    final var turnOutput = m_turningPIDController.calculate(getAngle(), state.angle.getRadians());
+    if(Constants.RobotConstants.kRobot){
+      // Calculate the turning motor output from the turning PID controller.
+      final var turnOutput = m_turningPIDController.calculate(getAngle(), state.angle.getRadians());
 
-    // Calculate the turning motor output from the turning PID controller.
-    SmartDashboard.putNumber(modID + "driveOutput", driveOutput);
-    m_driveMotor.set(driveOutput);
-    SmartDashboard.putNumber(modID + "turnOutput", turnOutput);
-    m_turningMotor.set(TalonSRXControlMode.PercentOutput, turnOutput);
+      // Calculate the turning motor output from the turning PID controller.
+      SmartDashboard.putNumber(modID + "driveOutput", driveOutput);
+      m_driveMotor.set(driveOutput);
+      SmartDashboard.putNumber(modID + "turnOutput", turnOutput);
+      m_turningMotorSRX.set(TalonSRXControlMode.PercentOutput, turnOutput);
+    }else{
+      //TODO REPLICATE ABOVE WITH PID - ESTABLISH PID CONTROLLERS
+    }
+    
   }
 
   /** Zeros all the SwerveModule encoders. */
@@ -149,9 +187,13 @@ public class SwerveModule {
   public void sendToDashboard() {
     // SmartDashboard.putNumber(modID + " drive pos", m_driveEncoder.getPosition());
     SmartDashboard.putNumber(modID + " drive vel", m_driveEncoder.getVelocity());
-    SmartDashboard.putNumber(modID + " turn pos",
-    ((180/Math.PI)*(m_turningMotor.getSelectedSensorPosition(0) * ModuleConstants.kTurningEncoderDistancePerPulse)
-    + (offset * Math.PI / 180)));
+    if(Constants.RobotConstants.kRobot){
+      SmartDashboard.putNumber(modID + " turn pos",
+      ((180/Math.PI)*(m_turningMotorSRX.getSelectedSensorPosition(0) * ModuleConstants.kTurningEncoderDistancePerPulse)
+      + (offset * Math.PI / 180)));
+    }else{
+      //TODO NEO version of output
+    }
     // SmartDashboard.putNumber(modID + "state velocity", getState().speedMetersPerSecond);
     // SmartDashboard.putNumber(modID + " turn vel",
     // m_turningMotor.getSelectedSensorVelocity(0) *

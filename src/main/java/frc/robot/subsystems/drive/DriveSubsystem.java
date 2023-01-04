@@ -21,19 +21,19 @@ public class DriveSubsystem extends SubsystemBase {
   // Robot swerve modules
   private final SwerveModule m_frontLeft = new SwerveModule("frontLeft", DriveConstants.kFrontLeftDriveMotorPort,
       DriveConstants.kFrontLeftTurningMotorPort, DriveConstants.kFrontLeftDriveEncoderReversed,
-      DriveConstants.kFrontLeftOffset);
+      DriveConstants.kFrontLeftOffset, DriveConstants.kFrontLeftAbsEncoderPort);
 
   private final SwerveModule m_rearLeft = new SwerveModule("rearLeft", DriveConstants.kRearLeftDriveMotorPort,
       DriveConstants.kRearLeftTurningMotorPort, DriveConstants.kRearLeftDriveEncoderReversed,
-      DriveConstants.kRearLeftOffset);
+      DriveConstants.kRearLeftOffset, DriveConstants.kRearLeftAbsEncoderPort);
 
   private final SwerveModule m_frontRight = new SwerveModule("frontRight", DriveConstants.kFrontRightDriveMotorPort,
       DriveConstants.kFrontRightTurningMotorPort, DriveConstants.kFrontRightDriveEncoderReversed,
-      DriveConstants.kFrontRightOffset);
+      DriveConstants.kFrontRightOffset, DriveConstants.kFrontRightAbsEncoderPort);
 
   private final SwerveModule m_rearRight = new SwerveModule("rearRight", DriveConstants.kRearRightDriveMotorPort,
       DriveConstants.kRearRightTurningMotorPort, DriveConstants.kRearRightDriveEncoderReversed,
-      DriveConstants.kRearRightOffset);
+      DriveConstants.kRearRightOffset, DriveConstants.kRearRightAbsEncoderPort);
 
   // The gyro sensor
   private final Pigeon m_gyro = Pigeon.getInstance();

@@ -24,7 +24,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public final class Constants {
   
   public static final class RobotConstants {
-    public static final boolean kRobot = true; // snowflake = true, competition = false
+    public static final boolean kRobot = true; // snowflake = true, Real = false
   }
 
   public static final class DriveConstants {
@@ -39,6 +39,12 @@ public final class Constants {
     public static final int kFrontRightTurningMotorPort = 15; // CAN ID
     public static final int kRearRightTurningMotorPort  = 18; // CAN ID
 
+    public static final int kFrontLeftAbsEncoderPort  = 16; // CAN ID
+    public static final int kRearLeftAbsEncoderPort   = 17; // CAN ID
+    public static final int kFrontRightAbsEncoderPort = 15; // CAN ID
+    public static final int kRearRightAbsEncoderPort  = 18; // CAN ID
+
+    //TODO MODIFY BASED ON NEW ROBOT BETWEEN HERE------------------------------------
     public static final boolean kFrontLeftDriveEncoderReversed  = (RobotConstants.kRobot) ? true : false;
     public static final boolean kRearLeftDriveEncoderReversed   = (RobotConstants.kRobot) ? true : false;
     public static final boolean kFrontRightDriveEncoderReversed = (RobotConstants.kRobot) ? false : false;
@@ -55,6 +61,7 @@ public final class Constants {
 
     // Distance between front and back wheels on robot
     public static final double kWheelBase = (RobotConstants.kRobot) ? 0.8382 : 0.444; // m
+    //TODO AND HERE------------------------------------------
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, kTrackWidth / 2), new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
@@ -82,11 +89,6 @@ public final class Constants {
     public static final double kPModuleTurningController = 1;
 
     public static final double kPModuleDriveController = 0.1;
-  }
-  
-  public static final class IntakeConstants  {
-  // public static int kIntakeMotorPort          = 21; // CAN ID
-
   }
 
   public static final class ControllerConstants {
